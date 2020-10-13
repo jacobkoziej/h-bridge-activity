@@ -2,7 +2,7 @@
  * Jacob Koziej
  * H-Bridge Activity (Task 3)
  * 2020-10-10
- * 2020-10-11
+ * 2020-10-12
  */
 
 
@@ -82,37 +82,27 @@ void motor(uint8_t speed, uint8_t state)
 	if (state & _BV(0) && state & _BV(3)) return;
 	if (state & _BV(1) && state & _BV(2)) return;
 
-	// Q0
-	if (state & _BV(0)) {
-		TCCR1A = (speed != 0xFF && speed != 0x00) ?
-			(TCCR1A | _BV(COM1A1)) : (TCCR1A & ~_BV(COM1A1));
+	// Account for digital states
+	uint8_t pwm_mask   = _BV(COM1A1) | _BV(COM1B1);
+	uint8_t portb_mask = _BV(1) | _BV(2);
 
-		PORTB = (speed == 0xFF) ? (PORTB & ~_BV(1)) : (PORTB | _BV(1));
+	TCCR1A = (speed != 0xFF && speed != 0x00) ?
+		(TCCR1A | pwm_mask) : (TCCR1A & ~pwm_mask);
 
-		OCR1A = ~speed;
-	} else {
+	PORTB = (speed == 0xFF) ? (PORTB & ~portb_mask) : (PORTB | portb_mask);
+
+	// Set port states
+	OCR1A = OCR1B = ~speed;
+
+	if (!(state & _BV(0))) {
 		TCCR1A &= ~_BV(COM1A1);
 		PORTB  |=  _BV(1);
 	}
-
-	// Q1
-	if (state & _BV(1)) {
-		TCCR1A = (speed != 0xFF && speed != 0x00) ?
-			(TCCR1A | _BV(COM1B1)) : (TCCR1A & ~_BV(COM1B1));
-
-		PORTB = (speed == 0xFF) ? (PORTB & ~_BV(2)) : (PORTB | _BV(2));
-
-		OCR1B = ~speed;
-	} else {
+	if (!(state & _BV(1))) {
 		TCCR1A &= ~_BV(COM1B1);
 		PORTB  |=  _BV(2);
 	}
 
-	// Q2
-	PORTD = (state & _BV(2)) ?
-		(PORTD | _BV(0)) : (PORTD & ~_BV(0));
-
-	// Q3
-	PORTD = (state & _BV(3)) ?
-		(PORTD | _BV(1)) : (PORTD & ~_BV(1));
+	PORTD = (state & _BV(2)) ? (PORTD | _BV(0)) : (PORTD & ~_BV(0));
+	PORTD = (state & _BV(3)) ? (PORTD | _BV(1)) : (PORTD & ~_BV(1));
 }
