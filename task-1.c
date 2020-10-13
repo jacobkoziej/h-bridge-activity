@@ -2,7 +2,7 @@
  * Jacob Koziej
  * H-Bridge Activity (Task 1)
  * 2020-10-11
- * 2020-10-11
+ * 2020-10-12
  */
 
 
@@ -22,11 +22,6 @@
 
 // Constants
 #define DELAY 1000
-
-#define CW    0b0101
-#define CCW   0b1010
-#define BRAKE 0b0011
-#define COAST 0b1100
 
 
 // Function prototypes
