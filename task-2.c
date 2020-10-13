@@ -2,18 +2,24 @@
  * Jacob Koziej
  * H-Bridge Activity (Task 2)
  * 2020-10-08
- * 2020-10-10
+ * 2020-10-12
  */
-#include <avr/io.h>
-#include <util/delay.h>
 
 
 /*
  * PIN MAPPING
  *
- * Q1 == PORTB1/OC1A
- * Q2 == PORTB2/OC1B
+ * Q1 = PORTB1/OC1A
+ * Q2 = PORTB2/OC1B
  */
+
+
+#include <avr/io.h>
+#include <util/delay.h>
+
+
+// Constants
+#define DELAY 2000
 
 
 // Function prototypes
@@ -31,9 +37,13 @@ int main(void)
 
 	while (1) {
 		CW(128);
-		_delay_ms(2000);
+		_delay_ms(DELAY);
+		coast();
+		_delay_ms(DELAY);
 		CCW(128);
-		_delay_ms(2000);
+		_delay_ms(DELAY);
+		brake();
+		_delay_ms(DELAY);
 	}
 
 	return 0;
@@ -87,7 +97,6 @@ void brake(void)
 	// Disable PWM for OCA1A:B
 	TCCR1A &= ~(_BV(COM1A1) | _BV(COM1B1));
 
-	// This will destroy circuit
 	PORTB &= ~(_BV(1) | _BV(2));
 }
 
